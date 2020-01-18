@@ -16,7 +16,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.ControlType;
-
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 /**
@@ -27,8 +27,8 @@ import com.revrobotics.ControlType;
  * directory.
  */
 public class Robot extends TimedRobot {
-  private CANSparkMax leftMotor = new CANSparkMax(1, null);
-  private CANSparkMax rightMotor = new CANSparkMax(2, null);
+  private CANSparkMax leftMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private CANSparkMax rightMotor = new CANSparkMax(2, MotorType.kBrushless);
   private CANEncoder leftEncoder = new CANEncoder(leftMotor);
   private CANEncoder rightEncoder = new CANEncoder(rightMotor);
   private CANPIDController m_pidController;
