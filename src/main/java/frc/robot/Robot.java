@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
   private CANEncoder leftEncoder = new CANEncoder(leftMotor);
   private CANEncoder rightEncoder = new CANEncoder(rightMotor);
   private CANPIDController m_pidController;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, velocity;
   
 
   private final Timer m_timer = new Timer();
@@ -73,6 +73,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Feed Forward", kFF);
     SmartDashboard.putNumber("Max Output", kMaxOutput);
     SmartDashboard.putNumber("Min Output", kMinOutput);
+    SmartDashboard.putNumber("Velocity", velocity);
   }
 
   /**
