@@ -47,7 +47,6 @@ public class Robot extends TimedRobot {
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
     leftMotor.setInverted(true);
-    leftEncoder.setInverted(true);
     leftMotor.follow(rightMotor);
     
     m_pidController = rightMotor.getPIDController();
