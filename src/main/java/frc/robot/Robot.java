@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 
 
 /**
@@ -27,6 +28,8 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightMotor = new CANSparkMax(2, null);
   private CANEncoder leftEncoder = new CANEncoder(leftMotor);
   private CANEncoder rightEncoder = new CANEncoder(rightMotor);
+  private CANPIDController m_pidController;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
   
 
   private final Joystick joy1 = new Joystick(0);
@@ -38,6 +41,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    leftMotor.restoreFactoryDefaults();
+    rightMotor.restoreFactoryDefaults();
+    leftMotor.setInverted(true);
+    leftEncoder.setInverted(true);
+    leftMotor.follow(rightMotor);
+
+    m_pidController = rightMotor.getPIDController();
   }
 
   /**
@@ -71,6 +81,17 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    //pid coefficients
+    kP = 5e-5;
+    kI = 1e-6;
+    kD = 0;
+    kIz = 0;
+    kFF = 0;
+    kMaxOutput = 1;
+    kMinOutput = -1;
+    maxRPM = 5700;
+    m_pidController.setP(kP);
+
     double speed = joy1.getRawAxis(1);
     leftMotor.set(-speed);
     rightMotor.set(speed);
