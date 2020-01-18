@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +34,6 @@ public class Robot extends TimedRobot {
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
   
 
-  private final Joystick joy1 = new Joystick(0);
   private final Timer m_timer = new Timer();
 
   /**
@@ -117,6 +115,10 @@ public class Robot extends TimedRobot {
     double max = SmartDashboard.getNumber("Max Output", 0);
     double min = SmartDashboard.getNumber("Min Output", 0);
 
+    //get velocity from SmartDashboard
+    double velocity = SmartDashboard.getNumber("Velocity", 0);
+
+
     // if PID coefficients on SmartDashboard have changed, write new values to controller
     if((p != kP)) { m_pidController.setP(p); kP = p; }
     if((i != kI)) { m_pidController.setI(i); kI = i; }
@@ -128,12 +130,12 @@ public class Robot extends TimedRobot {
       kMinOutput = min; kMaxOutput = max; 
 
   }
-    double setPoint = joy1.getY()*maxRPM;
-    m_pidController.setReference(setPoint, ControlType.kVelocity);
+  double speed = velocity*maxRPM;
+  m_pidController.setReference(speed, ControlType.kVelocity);
     
-    SmartDashboard.putNumber("SetPoint", setPoint);
-    SmartDashboard.putNumber("ProcessVariable", rightEncoder.getVelocity());
-    SmartDashboard.putNumber("ProcessVariable", leftEncoder.getVelocity());
+  SmartDashboard.putNumber("CurretVelocity", speed);
+  SmartDashboard.putNumber("ProcessVariable", rightEncoder.getVelocity());
+  SmartDashboard.putNumber("ProcessVariable", leftEncoder.getVelocity());
 
   }
   /**
