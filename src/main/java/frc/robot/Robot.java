@@ -8,9 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANEncoder;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,8 +23,12 @@ import edu.wpi.first.wpilibj.Timer;
  * directory.
  */
 public class Robot extends TimedRobot {
-  private Spark leftMotor = new Spark(0);
-  private Spark rightMotor = new Spark(1);
+  private CANSparkMax leftMotor = new CANSparkMax(1, null);
+  private CANSparkMax rightMotor = new CANSparkMax(2, null);
+  private CANEncoder leftEncoder = new CANEncoder(leftMotor);
+  private CANEncoder rightEncoder = new CANEncoder(rightMotor);
+  
+
   private final Joystick joy1 = new Joystick(0);
   private final Timer m_timer = new Timer();
 
@@ -65,7 +72,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     double speed = joy1.getRawAxis(1);
-    leftMotor.set(speed);
+    leftMotor.set(-speed);
     rightMotor.set(speed);
   }
 
