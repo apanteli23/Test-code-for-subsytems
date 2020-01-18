@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
       kMinOutput = min; kMaxOutput = max; 
 
   }
-  double setPoint = joy1.getY()*maxRPM;
+    double setPoint = joy1.getY()*maxRPM;
     m_pidController.setReference(setPoint, ControlType.kVelocity);
     
     SmartDashboard.putNumber("SetPoint", setPoint);
