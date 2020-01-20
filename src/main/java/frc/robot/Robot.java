@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,9 +7,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
+
+
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANEncoder;
@@ -17,13 +20,12 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
  * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
+ * creating this project, you must also update the build.gradle file in the
+ * project.
  */
 public class Robot extends TimedRobot {
   private CANSparkMax leftMotor = new CANSparkMax(1, MotorType.kBrushless);
@@ -31,15 +33,14 @@ public class Robot extends TimedRobot {
   private CANEncoder leftEncoder = new CANEncoder(leftMotor);
   private CANEncoder rightEncoder = new CANEncoder(rightMotor);
   private CANPIDController m_pidController;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, velocity;
-  
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, velocity, driverControl;
 
+  private Joystick joy1 = new Joystick(0);
+  
   private final Timer m_timer = new Timer();
 
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
+
+
   @Override
   public void robotInit() {
     leftMotor.restoreFactoryDefaults();
@@ -74,37 +75,24 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Max Output", kMaxOutput);
     SmartDashboard.putNumber("Min Output", kMinOutput);
     SmartDashboard.putNumber("Velocity", velocity);
+    SmartDashboard.putNumber("Driver Control (1 or 0)", driverControl);
+
   }
 
-  /**
-   * This function is run once each time the robot enters autonomous mode.
-   */
   @Override
   public void autonomousInit() {
     m_timer.reset();
     m_timer.start();
   }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
   @Override
   public void autonomousPeriodic() {
-    // Drive for 2 seconds
-
-    
   }
 
-  /**
-   * This function is called once each time the robot enters teleoperated mode.
-   */
   @Override
   public void teleopInit() {
   }
 
-  /**
-   * This function is called periodically during teleoperated mode.
-   */
   @Override
   public void teleopPeriodic() {
     // read PID coefficients from SmartDashboard
@@ -115,6 +103,11 @@ public class Robot extends TimedRobot {
     double ff = SmartDashboard.getNumber("Feed Forward", 0);
     double max = SmartDashboard.getNumber("Max Output", 0);
     double min = SmartDashboard.getNumber("Min Output", 0);
+
+    // read driver control from SmartDashboard
+    double m_driverControl = SmartDashboard.getNumber("Driver Control", 0);
+
+
 
     //get velocity from SmartDashboard
     double velocity = SmartDashboard.getNumber("Velocity", 0);
@@ -129,7 +122,23 @@ public class Robot extends TimedRobot {
     if((max != kMaxOutput) || (min != kMinOutput)) { 
       m_pidController.setOutputRange(min, max); 
       kMinOutput = min; kMaxOutput = max; 
-
+    
+    if(m_driverControl != driverControl) { 
+      m_driverControl = driverControl;
+    }
+    
+    if(m_driverControl == 1){
+      double speed2 = -joy1.getRawAxis(1);
+      if (speed2 <0.02){
+        leftMotor.set(0);
+        rightMotor.set(0);
+      }
+      else{
+        leftMotor.set(-speed2);
+        rightMotor.set(speed2);
+      }
+    }
+    
   }
   double speed = velocity*maxRPM;
   m_pidController.setReference(speed, ControlType.kVelocity);
@@ -137,12 +146,14 @@ public class Robot extends TimedRobot {
   SmartDashboard.putNumber("CurretVelocity", speed);
   SmartDashboard.putNumber("ProcessVariable", rightEncoder.getVelocity());
   SmartDashboard.putNumber("ProcessVariable", leftEncoder.getVelocity());
+}
 
+  @Override
+  public void testInit() {
   }
-  /**
-   * This function is called periodically during test mode.
-   */
+
   @Override
   public void testPeriodic() {
   }
+
 }
