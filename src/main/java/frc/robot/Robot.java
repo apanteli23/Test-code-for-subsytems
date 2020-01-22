@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
@@ -34,8 +33,6 @@ public class Robot extends TimedRobot {
   private CANEncoder rightEncoder = new CANEncoder(rightMotor);
   private CANPIDController m_pidController;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, velocity, driverControl;
-
-  private Joystick joy1 = new Joystick(0);
   
   private final Timer m_timer = new Timer();
 
@@ -104,9 +101,6 @@ public class Robot extends TimedRobot {
     double max = SmartDashboard.getNumber("Max Output", 0);
     double min = SmartDashboard.getNumber("Min Output", 0);
 
-    // read driver control from SmartDashboard
-    double m_driverControl = SmartDashboard.getNumber("Driver Control", 0);
-
 
 
     //get velocity from SmartDashboard
@@ -122,31 +116,16 @@ public class Robot extends TimedRobot {
     if((max != kMaxOutput) || (min != kMinOutput)) { 
       m_pidController.setOutputRange(min, max); 
       kMinOutput = min; kMaxOutput = max; 
-    
-    if(m_driverControl != driverControl) { 
-      m_driverControl = driverControl;
     }
     
-    if(m_driverControl == 1){
-      double speed2 = -joy1.getRawAxis(1);
-      if (speed2 <0.02){
-        leftMotor.set(0);
-        rightMotor.set(0);
-      }
-      else{
-        leftMotor.set(-speed2);
-        rightMotor.set(speed2);
-      }
-    }
     
+    double speed = velocity*maxRPM;
+    m_pidController.setReference(speed, ControlType.kVelocity);
+      
+    SmartDashboard.putNumber("CurretVelocity", speed);
+    SmartDashboard.putNumber("ProcessVariable", rightEncoder.getVelocity());
+    SmartDashboard.putNumber("ProcessVariable", leftEncoder.getVelocity());
   }
-  double speed = velocity*maxRPM;
-  m_pidController.setReference(speed, ControlType.kVelocity);
-    
-  SmartDashboard.putNumber("CurretVelocity", speed);
-  SmartDashboard.putNumber("ProcessVariable", rightEncoder.getVelocity());
-  SmartDashboard.putNumber("ProcessVariable", leftEncoder.getVelocity());
-}
 
   @Override
   public void testInit() {
